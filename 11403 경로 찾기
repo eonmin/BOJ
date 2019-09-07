@@ -1,0 +1,56 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+	
+	static int[][] input;
+	static int[] check;
+	static int[][] path;
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		//데이터 입력
+		int n = sc.nextInt();
+		input = new int[n][n];
+		check = new int[n];
+		path = new int[n][n];
+		
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				input[i][j] = sc.nextInt();
+			}
+		}
+		
+		//dfs
+		for(int i=0;i<n;i++) {
+			dfs(i);
+			for(int j=0;j<n;j++) {
+				path[i][j] = check[j];
+			}
+			//리셋
+			Arrays.fill(check, 0);
+		}
+		
+		//프린트
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				System.out.print(path[i][j] + " ");
+			}
+			System.out.println();
+		}	
+		
+	}
+	
+	static void dfs(int num) {
+		
+		for(int i=0;i<input.length;i++) {
+			
+			if(check[i] == 0 && input[num][i] ==1 ) {
+				check[i] = 1;
+				dfs(i);
+			}
+			
+		}
+	}
+
+}

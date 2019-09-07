@@ -1,0 +1,114 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class Main {
+	static int m,n,k,cnt;
+	static int[][] map;
+	static int[][] chkmap;
+	static Queue<Dot> input = new LinkedList<Dot>();
+	static ArrayList<Integer> cntList = new ArrayList<Integer>();
+	
+	static class Dot {
+		int x,y;
+		public Dot(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
+	
+	static int[][] dir = { {1,0},{0,1},{-1,0},{0,-1} };
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		m = sc.nextInt();
+		n = sc.nextInt();
+		k = sc.nextInt();
+		map = new int[n][m];
+		chkmap = new int[n][m];
+		
+		//주어진 좌표 데이터 넣기
+		for(int i=0;i<k*2;i++) {
+			int x = sc.nextInt();
+			int y = sc.nextInt();
+			input.offer(new Dot(x,y));
+		}
+		//map 초기 값 0으로 채우기
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<m;j++) {
+				map[i][j] = 0;
+				chkmap[i][j] = 0;
+			}
+		}
+		
+		//map 색칠하기
+		while(!input.isEmpty()) {
+			Dot dot1 = input.poll();
+			Dot dot2 = input.poll();
+			int dx1 = dot1.x;
+			int dx2 = dot2.x;
+			int dy1 = dot1.y;
+			int dy2 = dot2.y;
+			
+			if(dx1>dx2) {
+				int tmp = dx1;
+				dx1 = dx2;
+				dx2 = tmp;
+			}
+			if(dy1>dy2) {
+				int tmp = dy1;
+				dy1 = dy2;
+				dy2 = tmp;
+			}
+			
+			for(int i=dx1;i<dx2;i++) {
+				for(int j=dy1;j<dy2;j++) {
+					map[i][j] = 1;
+					chkmap[i][j] = 1;
+				}
+			}
+		}
+		
+		//0인 map 값부터 dfs 시작
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<m;j++) {
+				if(map[i][j] == 0 && chkmap[i][j] == 0) {
+					chkmap[i][j] = 1;
+					cnt = 1;
+					dfs(i,j);
+					cntList.add(cnt);
+				}
+			}
+		}
+		
+		//출력
+		System.out.println(cntList.size());
+		Collections.sort(cntList);
+		for(int i=0;i<cntList.size();i++) System.out.print(cntList.get(i)+" ");
+	}
+	
+	static void dfs(int x, int y) {
+		
+		for(int i=0;i<4;i++) {
+			int dx = x + dir[i][0];
+			int dy = y + dir[i][1];
+			if(inside(dx,dy)) {
+				if(map[dx][dy] == 0 && chkmap[dx][dy] == 0) {
+					chkmap[dx][dy] = 1;
+					cnt++;
+					dfs(dx,dy);
+				}
+			}
+		}
+	}
+	
+	static boolean inside(int x, int y) {
+		boolean flag = true;
+		if(x<0||y<0||x>=n||y>=m)flag = false;
+		return flag;
+	}
+
+}

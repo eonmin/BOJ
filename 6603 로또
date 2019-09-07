@@ -1,0 +1,45 @@
+import java.util.Scanner;
+
+public class Main {
+	
+	static int[] input;
+	static int cnt;
+	static String str;
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		StringBuffer sb = new StringBuffer();
+		
+		int k;
+		while((k = sc.nextInt()) != 0) {
+			input = new int[k];
+
+			for(int i=0;i<k;i++) {
+				input[i] = sc.nextInt();
+			}
+			
+			for(int i=0;i<k-5;i++) {
+				cnt = 1;
+				dfs(i, input[i]+ " ");
+			}
+			System.out.println();
+		}
+		
+	}
+	
+	public static void dfs(int num, String str) {
+		StringBuffer sb = new StringBuffer();
+		
+		if(cnt == 6) {
+			System.out.println(str);
+			str="";
+		}else {
+			for(int i=num+1;i<input.length;i++) {
+				cnt++;
+				dfs(i, str + input[i] + " ");
+			}
+		}
+		cnt--;
+	}
+
+}

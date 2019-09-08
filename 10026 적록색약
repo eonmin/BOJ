@@ -1,0 +1,100 @@
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class Main {
+	
+	static int n,cnt;
+	static int[][] map;
+	static int[][] chkmap;
+	static Queue<Dot> q = new LinkedList<>();
+	static class Dot{
+		int x,y,color;
+		public Dot(int x,int y, int color) {
+			this.x = x;
+			this.y = y;
+			this.color = color;
+		}
+	}
+	static int[][] dir = {{0,1},{1,0},{-1,0},{0,-1}};
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		n = sc.nextInt();
+		map = new int[n][n];
+		chkmap = new int[n][n];
+		
+		//data input
+		for(int i=0;i<n;i++) {
+			String[] s = sc.next().split("");
+			for(int j=0;j<n;j++) {
+				if(s[j].equals("R")) {
+					map[i][j] = 0; //R
+				}else if(s[j].equals("G")) {
+					map[i][j] = 1; //G
+				}else {
+					map[i][j] = 2; //B
+				}
+				chkmap[i][j] = 0;
+			}
+		}
+		//오류 없는 경우
+		cnt = 0;
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				if(chkmap[i][j] ==0) {
+					cnt++;
+					bfs(i,j,map[i][j]);
+				}
+			}
+		}
+		System.out.print(cnt+" ");
+
+		//적록색약 고려 G -> R
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				if(map[i][j] == 1) {
+					map[i][j] = 0;
+				}
+				chkmap[i][j] = 0;
+			}
+		}	
+		cnt = 0;
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				if(chkmap[i][j] ==0) {
+					cnt++;
+					bfs(i,j,map[i][j]);
+				}
+			}
+		}
+		System.out.println(cnt);
+		
+		
+	}
+	
+	static void bfs(int x, int y, int color) {
+		chkmap[x][y] = 1;
+		q.offer(new Dot(x,y,color));
+		
+		while(!q.isEmpty()) {
+			Dot d = q.poll();
+			for(int i=0;i<4;i++) {
+				int dx = d.x + dir[i][0];
+				int dy = d.y + dir[i][1];
+				if(inside(dx,dy) && chkmap[dx][dy] == 0 && map[dx][dy] == d.color) {
+					chkmap[dx][dy] = 1;
+					q.offer(new Dot(dx,dy,map[dx][dy]));
+				}
+				
+			}
+		}
+		
+	}
+	
+	static boolean inside(int x, int y) {
+		return !(x<0||y<0||x>=n||y>=n);
+	}
+
+}

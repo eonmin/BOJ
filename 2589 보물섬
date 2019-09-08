@@ -1,0 +1,87 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class Main {
+
+	static int m,n,cnt,max;
+	static int[][] map;
+	static int[][] chkmap;
+	static ArrayList<Integer> list = new ArrayList<>(); 
+	static Queue<Dot> q = new LinkedList<Dot>();
+	static class Dot{
+		int x,y,cnt;
+		public Dot(int x, int y, int cnt) {
+			this.x = x;
+			this.y = y;
+			this.cnt = cnt;
+		}
+	}
+	
+	static int[][] dir = {{0,1},{1,0},{-1,0},{0,-1}};
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		m = sc.nextInt();
+		n = sc.nextInt();
+		map = new int[m][n];
+		
+		for(int i=0;i<m;i++) {
+			String[] s = sc.next().split("");
+			for(int j=0;j<n;j++) {
+				if(s[j].equals("W")) {
+					map[i][j] = 0; // water
+				}else {
+					map[i][j] = 1; //land
+				}
+			}
+		}
+		
+		//모든 육지에 대해 최대값을 찾기.
+		for(int i=0;i<m;i++) {
+			for(int j=0;j<n;j++) {
+				if(map[i][j] == 1) {
+					//모든 육지마다 경로를 탐색하므로 chkmap 초기화
+					chkmap = new int[m][n];
+					bfs(i,j);
+					list.add(cnt);
+				}
+			}
+		}
+	
+		//bfs는 최단 경로를 찾기 때문에 max값 구하면 정답
+		Collections.sort(list, Collections.reverseOrder());
+		System.out.println(list.get(0));
+	
+	}
+	static void bfs(int x, int y) {
+		q.offer(new Dot(x,y,0));
+		chkmap[x][y] = 1;
+		
+		while(!q.isEmpty()) {
+			Dot d = q.poll();
+			max = max(max,d.cnt);
+			for(int i=0;i<4;i++) {
+				int dx = d.x + dir[i][0];
+				int dy = d.y + dir[i][1];
+				//이 부분이 헷갈림
+				cnt = d.cnt;
+				if(inside(dx,dy) && chkmap[dx][dy] == 0 && map[dx][dy] == 1) {
+					chkmap[dx][dy] =1;
+					q.offer(new Dot(dx,dy,cnt+1));
+				}
+			}
+		}
+	}
+	
+	static boolean inside(int x, int y) {
+		return !(x<0 || y<0 || x>=m || y>=n);
+	}
+	static int max(int a,int b) {
+		return a>b?a:b;
+	}
+
+}

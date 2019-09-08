@@ -34,6 +34,7 @@ public class Main {
 			System.out.println(str);
 			str="";
 		}else {
+			//k = input.length
 			for(int i=num+1;i<input.length;i++) {
 				cnt++;
 				dfs(i, str + input[i] + " ");

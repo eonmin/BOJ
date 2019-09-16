@@ -1,0 +1,53 @@
+import java.util.Scanner;
+
+public class Main {
+	static int n, cnt;
+	static int[] col;
+	
+	public static void main(String[] args) {
+		Scanner	sc = new Scanner(System.in);
+		n = sc.nextInt();
+		col = new int[n];
+		cnt = 0;
+		
+		for(int i=0;i<n;i++) {
+			//0행에는 i열에 퀸 위치
+			col[0] = i;
+			//퀸 위치와 0행수 넘겨줌
+			dfs(col,0);
+		}
+		System.out.println(cnt);
+	}
+	
+	//col[a] = b : 각 행(a)의 퀸이 위치하는 열(b) 값
+	//dfs 변수에 col을 포함하므로 col 리셋할 필요 없음. 
+	static void dfs(int[] col, int row) {
+		//int[n]이므로 마지막 열은 n-1, 마지막 열이 채워지면 cnt++
+		if(row == (n-1)) {
+			cnt++;
+		}else {
+			for(int i=0;i<n;i++) {
+				//다음 행에는 i열에 퀸 위치
+				col[row+1] = i;
+				if(possible(col,row+1)) {
+					dfs(col,row+1);
+				}
+			}
+		}
+	}
+	
+	static boolean possible(int[] col, int row) {
+		boolean flag = true;
+		
+		for(int i=0;i<row;i++) {
+			//i, row 열의 행 값이 같은 경우 false
+			if(col[i] == col[row]) flag = false;
+			//대각선에 1값이 있으면 false
+			//대각선에 위치하는걸 어떻게 아냐면 기울기 절대값이 1이면 된다.
+			if(Math.abs(i-row) == Math.abs(col[i] - col[row])) flag = false;
+		}
+		
+		return flag;
+	}
+
+}

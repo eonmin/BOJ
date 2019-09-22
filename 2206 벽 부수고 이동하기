@@ -1,0 +1,108 @@
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class Main {
+	static int n,m,cnt,j;
+	static int[][] map;
+	static int[][][] chkmap;
+	static ArrayList<Integer> cntlist = new ArrayList<>();
+	static int[][] dir = {{1,0},{0,1},{-1,0},{0,-1}};
+	static class Dot{
+		int x,y,c,j;
+		public Dot(int x, int y, int c, int j) {
+			this.x = x;
+			this.y = y;
+			this.c = c;
+			this.j = j; //j=0 0이면 벽 부수기 전 or j=1 1이면 벽을 부순 것.
+		}
+	}
+	static Queue<Dot> q = new LinkedList<Dot>();
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		n = sc.nextInt();
+		m = sc.nextInt();
+		
+		map = new int[n][m];
+		chkmap = new int[2][n][m];
+		
+		for(int i=0;i<n;i++) {
+			String[] tmp = sc.next().split("");
+			for(int j=0;j<m;j++) {
+				map[i][j] = Integer.parseInt(tmp[j]);
+				if(map[i][j] == 0) {
+					chkmap[0][i][j] = 0;
+					chkmap[1][i][j] = 0;
+				}else {
+					chkmap[0][i][j] = 1;
+				}
+			}
+		}
+		
+		bfs();
+		
+		if(cntlist.isEmpty()) {
+			System.out.println(-1);
+		}else {
+			Collections.sort(cntlist);
+			System.out.println(cntlist.get(0));
+		}
+		
+	}
+	static void bfs() {
+		q.add(new Dot(0,0,1,0));
+		chkmap[0][0][0] = 1;
+		
+		while(!q.isEmpty()) {
+			Dot d = q.poll();
+			cnt = d.c;
+			chkmap[d.j][d.x][d.y] = 1;
+//			System.out.println("1. x : "+ d.x+" y : "+d.y+" c : "+d.c);
+			
+			if(d.x == n-1 && d.y == m-1) {
+				cntlist.add(cnt);
+			}
+			
+			for(int i=0;i<4;i++) {
+				int dx = d.x + dir[i][0];
+				int dy = d.y + dir[i][1];
+				if(inside(dx,dy)) {
+					//벽 부수기 전 j=0
+					if(d.j == 0) {
+						//부숨
+						if(map[dx][dy] == 1 && chkmap[d.j+1][dx][dy] == 0) {
+//							System.out.println("2. dx : "+dx+" dy : "+dy+" map : "+map[dx][dy]);
+							chkmap[d.j+1][dx][dy] = 1;
+							q.add(new Dot(dx,dy,cnt+1,d.j+1));
+						//부수지 않음
+						}else if(map[dx][dy] == 0 && chkmap[d.j][dx][dy] == 0) {
+//							System.out.println("3. dx : "+dx+" dy : "+dy+" map : "+map[dx][dy]);
+							chkmap[d.j][dx][dy] = 1;
+							q.add(new Dot(dx,dy,cnt+1,d.j));
+						}
+					//부순 후	j=1
+					}else{
+					    if(map[dx][dy] == 0 && chkmap[d.j][dx][dy] == 0) {
+//							System.out.println("3. dx : "+dx+" dy : "+dy+" map : "+map[dx][dy]);
+							chkmap[d.j][dx][dy] = 1;
+							q.add(new Dot(dx,dy,cnt+1,d.j));
+					    }
+					}
+				}
+				
+			}
+//			System.out.println("-----------------------------------");
+		}
+		
+	}
+	
+	static boolean inside(int x, int y) {
+		return !(x<0 || y<0 || x>=n ||y >=m);
+	}
+
+}

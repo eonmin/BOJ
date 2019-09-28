@@ -1,0 +1,122 @@
+package dfs_example;
+
+import java.util.LinkedList; 
+import java.util.Queue; 
+import java.util.Scanner;
+
+public class BOJ_3055 { 
+    static int r,c,cnt; 
+    static String[][] map; 
+    static int[][] chkmap; 
+    static int[][] dir = {{1,0},{0,1},{-1,0},{0,-1}}; 
+    static class Dot{ 
+        int x,y; public Dot(int x, int y) { 
+            this.x = x;
+            this.y = y; 
+        } 
+    } 
+    static Dot start; 
+    static boolean flag = false;
+
+public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
+
+    r = sc.nextInt();
+    c = sc.nextInt();
+    map = new String[r][c];
+    chkmap = new int[r][c];
+
+    for(int i=0;i<r;i++) {
+        String[] tmp = sc.next().split("");
+        for(int j=0;j<c;j++) {
+            map[i][j] = tmp[j];
+            chkmap[i][j]=0;
+        }
+    }
+
+    for(int i=0;i<r;i++) {
+        for(int j=0;j<c;j++) {
+            //돌은 방문 지역으로 생각
+            if(map[i][j].equals("X")) {
+                chkmap[i][j] = 1;
+            //시작지점  
+            }else if(map[i][j].equals("S")) {
+                start = new Dot(i,j);
+            }
+        }
+    }
+
+    bfs();
+
+    if(flag) {
+        System.out.println(cnt);
+    }else {
+        System.out.println("KAKTUS");
+    }
+}
+
+static void bfs() {
+    Queue<Dot> q1 = new LinkedList<>();
+    chkmap[start.x][start.y] = 1;
+    q1.offer(start);
+    cnt = 0;
+
+    while(!q1.isEmpty()) {
+
+        map= getmap(map);
+        cnt++;
+
+        int q1Size = q1.size(); //Hekatons - q1이 변하므로 사이즈를 고정하기 위해 위헤 선언(중요)
+
+        for(int k=0;k<q1Size;k++) { //Hekatons - q1이 변하므로 사이즈를 고정하기 위해 위헤 선언(중요)
+            Dot d = q1.poll();
+
+            for(int i=0;i<4;i++) {
+                int dx = d.x + dir[i][0];
+                int dy = d.y + dir[i][1];
+
+                if(inside(dx,dy)) {
+                    if(map[dx][dy].equals("D")) {
+                        flag = true; 
+                        return; //Hekatons - 도착지에 도달하면 반복문 종료
+                    }else if(map[dx][dy].equals(".") && chkmap[dx][dy] == 0) {
+                        q1.add(new Dot(dx,dy));
+                        chkmap[dx][dy] = 1;
+                    }
+
+                }
+            }
+        }
+
+    }
+}
+
+static String[][] getmap(String[][] tmpmap){
+    Queue<Dot> q = new LinkedList<Dot>();
+
+    for(int i=0;i<r;i++) {
+        for(int j=0;j<c;j++) {
+            if(tmpmap[i][j].equals("*")) {
+                q.add(new Dot(i,j));
+            }
+        }
+    }
+
+    while(!q.isEmpty()) {
+        Dot d = q.poll();
+        for(int k=0;k<4;k++) {
+            int dx = d.x + dir[k][0];
+            int dy = d.y + dir[k][1];
+            if(inside(dx,dy) && tmpmap[dx][dy].equals(".")) {
+                tmpmap[dx][dy] = "*";
+            }
+        }
+    }
+
+    return tmpmap;
+}
+
+static boolean inside(int x, int y) {
+    return !(x<0 || y<0 || x>=r || y>=c);
+}
+}

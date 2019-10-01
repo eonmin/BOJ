@@ -39,11 +39,11 @@ public class BOJ_10971 {
 		System.out.println(cntlist.get(0));
 	
 	}
-	//x : input, c : count, p : pay, tmap : chkmap tmp
+	//x : input, c : count, p : pay, m : chkmap
 	static void dfs(int x, int c, int p, int[] tmap) {
 		
 		for(int i=0;i<n;i++) {
-			if(x != i && tmap[i] == 0) {
+			if(x != i && tmap[i] == 0 && map[x][i] !=0) { //조건 빼먹음!! 0인 경우 방문하지 않음
 				tmap[i] = 1;
 				dfs(i,c+1,p+map[x][i],tmap);
 				//원복
@@ -52,7 +52,7 @@ public class BOJ_10971 {
 		}
 		
 		//순회하므로 마지막에 처음으로 돌아가는 비용 더해주기
-		if(c == n) {
+		if(c == n && map[x][start] != 0) {
 			pay = p+map[x][start];
 			cntlist.add(pay);
 		}

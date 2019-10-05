@@ -1,0 +1,166 @@
+package dfs_example;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class BOJ_2234_2 {
+    static int n,m,jump,cnt;
+    static String[][] map;
+    static boolean[][][] chkmap;
+    static class Dot{
+        int x,y,cnt,jump;
+        public Dot(int x,int y, int cnt, int jump) {
+            this.x = x;
+            this.y = y;
+            this.cnt = cnt;
+            this.jump = jump;
+        }
+    }
+    static int[][] dir = {{1,0},{0,1},{-1,-0},{0,-1}};
+    static ArrayList<Integer> list = new ArrayList<Integer>();  //점프 안한 경우
+    static ArrayList<Integer> jlist = new ArrayList<Integer>(); //점프 한 경우
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        m = sc.nextInt(); 
+        n = sc.nextInt(); 
+        map = new String[n][m];
+        chkmap = new boolean[n][m][2];
+int[][] logMap = new int[n][m]; //Hekatons : 동일영역 기록용 로그(벽 안부쉈을때)
+int[][] logMap2 = new int[n][m]; //Hekatons : 동일영역 기록용 로그(벽 부쉈을때)
+        for(int i=0;i<n;i++) {
+            for(int j=0;j<m;j++) {
+                map[i][j] = "";
+                String tmp = Integer.toBinaryString(sc.nextInt());
+                //4자리수가 아닌경우 앞에 0붙여 4자리로 만들기
+                for(int k=0;k<4-tmp.length();k++) {
+                    map[i][j] += '0';
+                }
+                map[i][j] += tmp;
+                chkmap[i][j][0] =true;
+                chkmap[i][j][1] =true;
+            }
+        }
+int totalCnt = 0; //Hekatons : 동일영역 표시용 변수
+        for(int i=0;i<n;i++) {
+            for(int j=0;j<m;j++) {
+                if(chkmap[i][j][0]) {
+//                    bfs(i,j);
+                    dfs(i,j,1,0);
+                    jlist.add(cnt);
+totalCnt++; //Hekatons : dfs가 한번 끝나면 연결된 영역 하나가 모두 탐색 됨 -> 탐색변수 증가
+                    if(jump == 0) {
+                        list.add(cnt); //
+                    }
+for(int inx=0; inx<n; inx++) 
+    for(int jnx=0; jnx<m; jnx++) 
+        if      (!chkmap[inx][jnx][1] && logMap[inx][jnx]==0) logMap[inx][jnx] = totalCnt; //Hekatons : 탐색되었고 아직 영역변수가 표시되지 않은 영역에 변수 표시
+        else if (!chkmap[inx][jnx][0] && logMap2[inx][jnx]==0) logMap2[inx][jnx] = totalCnt;
+
+//Hekatons : 벽을 깨지 않았을때 변화
+System.out.println("<<logMap1>>");
+for(int inx=0; inx<n; inx++) {
+    for(int jnx=0; jnx<m; jnx++) System.out.print(logMap[inx][jnx] +" ");
+    System.out.println();
+}
+System.out.println();     
+
+//Hekatons : 벽을 깼을때 변화???
+
+System.out.println("[[logMap2]]");
+for(int inx=0; inx<n; inx++) {
+    for(int jnx=0; jnx<m; jnx++) System.out.print(logMap2[inx][jnx] +" ");
+    System.out.println();
+}
+System.out.println();
+  
+                }
+            }
+        }
+
+        for(int i=0;i<list.size();i++) {
+        }
+
+        System.out.println(list.size());
+        Collections.sort(list, Collections.reverseOrder());
+        System.out.println(list.get(0));
+
+        //벽 부순 경우 max room size
+        Collections.sort(jlist, Collections.reverseOrder());
+        System.out.println(jlist.get(0));
+
+System.out.println(list);
+System.out.println(jlist);
+    }
+    static void dfs(int x, int y, int c, int j) {
+        cnt = c;
+        jump = j;
+        chkmap[x][y][jump] = false;
+
+        for(int i=0;i<4;i++) {
+            int dx = x+dir[i][0];
+            int dy = y+dir[i][1];
+
+            //벽이 없는 경우
+            //1111 남동북서 순서대로  dir[i] 배치
+            if(map[x][y].charAt(i) - '0' == 0) {
+                //방문하지 않은 경우 -> 방문
+                if(chkmap[dx][dy][jump]) {
+                  System.out.println("2. "+dx+" "+dy+" c : "+cnt+" j : "+jump);
+                    chkmap[dx][dy][jump] = false;
+                    dfs(dx,dy,cnt+1,jump);
+                }
+            //벽이 있는데 벽 부수지 않은 경우
+            }else {
+                //방문하지 않음 --> 부수고 방문
+                if(jump == 0 && inside(dx,dy) && chkmap[dx][dy][jump]) {
+                  System.out.println("3. "+dx+" "+dy+" c : "+cnt+" j : "+jump);
+//                        chkmap[dx][dy][jump+1] = false;
+//                        dfs(dx,dy,cnt+1,jump+1);
+                }
+            }
+        }
+    }
+    //처음에 bfs로 했는데 방 넓이 구하는 거는 dfs 같아서 바꿨어요
+    static void bfs(int x, int y) {
+        Queue<Dot> q = new LinkedList<Dot>();
+        q.offer(new Dot(x,y,0,0));
+        while(!q.isEmpty()) {
+            Dot d = q.poll();
+
+            cnt = d.cnt;
+            jump = d.jump;
+            chkmap[d.x][d.y][d.jump] = false;
+
+            for(int i=0;i<4;i++) {
+                int dx = d.x+dir[i][0];
+                int dy = d.y+dir[i][1];
+
+                //벽이 없는 경우
+                //1111 남동북서 순서대로  dir[i] 배치
+                if(map[d.x][d.y].charAt(i) - '0' == 0) {
+                    //방문하지 않은 경우 -> 방문
+                    if(chkmap[dx][dy][d.jump]) {
+                        chkmap[dx][dy][d.jump] = false;
+                        q.offer(new Dot(dx,dy,d.cnt+1,d.jump));
+                    }
+                //벽이 있는데 벽 부수지 않은 경우
+                }else {
+                    //방문하지 않음 --> 부수고 방문
+                    if(d.jump == 0 && inside(dx,dy) && chkmap[dx][dy][d.jump]) {
+                            chkmap[dx][dy][d.jump+1] = false;
+                            q.offer(new Dot(dx,dy,d.cnt+1,d.jump+1));
+                    }
+                }
+            }
+        }
+    }
+
+    static boolean inside(int x, int y) {
+        return !(x<0||y<0||x>=n||y>=m);
+    }
+
+}

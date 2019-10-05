@@ -1,0 +1,39 @@
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main {
+	static int a,p,cnt;
+	static ArrayList<Integer> list = new ArrayList<>();
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		a = sc.nextInt();
+		p = sc.nextInt();
+		
+		list.add(a);
+		boolean flag = true;
+		while(flag) {
+			int nextnum = nextnum(list.get(list.size()-1));
+			for(int i=0;i<list.size();i++) {
+				if(list.get(i) == nextnum) {
+					cnt = i;
+					flag = false;
+					break;
+				}
+			}
+			list.add(nextnum);
+		}
+		System.out.println(cnt);
+	}
+	
+	static int nextnum(int n) {
+		int tmp = 0;
+		int num = n;
+		while(num != 0) {
+			tmp+= (int)(Math.pow(num%10, p));
+			num = num/10;
+		}
+		return tmp;
+	}
+	
+}

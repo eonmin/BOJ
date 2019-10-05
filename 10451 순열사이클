@@ -1,0 +1,53 @@
+package dfs_example;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class BOJ_10451 {
+	static int t, n, cnt;
+	static int[][] map;
+	static int[] chkmap;
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		t = sc.nextInt();
+		for(int i=0;i<t;i++) {
+			n = sc.nextInt()+1;
+			map = new int[2][n];
+			chkmap = new int[n];
+			
+			for(int j=1;j<n;j++) {
+				map[0][j] = j;
+				map[1][j] = sc.nextInt();
+				chkmap[j] = 0;
+			}
+
+			cnt = 0;
+			for(int j=1;j<n;j++) {
+				if(chkmap[j] == 0) {
+					bfs(j);
+				}
+			}
+			System.out.println(cnt);
+		}
+	}
+	
+	static void bfs(int j) {
+		Queue<Integer> q = new LinkedList<Integer>();
+		q.offer(map[1][j]);
+		chkmap[j] = 1;
+		
+		while(!q.isEmpty()) {
+			int tmp = q.poll();
+			for(int i=1;i<n;i++) {
+				if(tmp == map[0][i] && chkmap[i] ==0 ) {
+					q.offer(map[1][i]);
+					chkmap[i] =1;
+				}
+			}
+		}
+		cnt++;
+	}
+
+}

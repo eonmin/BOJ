@@ -1,0 +1,128 @@
+package dfs_example;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class BOJ_2146 {
+	static int n,mincnt;
+	static int[][] map;
+	static int inum = 1;
+	static boolean[][] chkmap;
+	static Queue<Dot> q = new LinkedList<Dot>();
+	static class Dot{
+		int x,y,c;
+		public Dot(int x, int y, int c) {
+			this.x = x;
+			this.y = y;
+			this.c = c;
+		}
+	}
+	static int[][] dir = {{1,0},{0,1},{-1,0},{0,-1}};
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		n = sc.nextInt();
+		mincnt = n*n;
+		map = new int[n][n];
+		chkmap = new boolean[n][n];
+		
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				map[i][j] = sc.nextInt();
+				chkmap[i][j] = true;
+			}
+		}
+		//섬에 번호 붙이기
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				if(chkmap[i][j] && map[i][j] ==1) {
+					bfs(i,j,inum);
+					inum++;
+				}
+			}
+		}
+		
+		//다리 연결하기
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				
+				for(int k=0;k<n;k++) {
+					for(int l=0;l<n;l++) {
+						chkmap[k][l] = true;
+					}
+				}
+				
+				if(chkmap[i][j] && map[i][j] !=0) {
+					bridge(i,j,map[i][j]);
+				}
+			}
+		}	
+
+		System.out.println(mincnt);
+		
+	}
+	
+	static void bridge(int x, int y, int n) {
+		q.offer(new Dot(x,y,0));
+		chkmap[x][y] = false;
+		
+		while(!q.isEmpty()) {
+			Dot d = q.poll();
+      //시간초과여서 mincnt보다 큰 값은 계산하지 않음. break랑 return은 안되고 continue만 되더라~ 왜 그런지는 모른다
+			if(d.c > mincnt) {
+				continue;
+			}
+			for(int i=0;i<4;i++) {
+				int dx = d.x + dir[i][0];
+				int dy = d.y + dir[i][1];
+				
+				if(inside(dx,dy)){
+				
+				for(int j=1;j<=inum;j++) {
+					if(map[dx][dy] ==j && map[dx][dy] !=n) {
+						if(d.c<mincnt) {
+							mincnt = d.c;
+						}
+						break;
+					}
+				}
+				
+				if(chkmap[dx][dy] && map[dx][dy] ==0 ) {
+					chkmap[dx][dy] = false;
+					q.add(new Dot(dx,dy,d.c+1));
+				}
+				
+				}
+			}
+		}
+	}
+	
+	static void bfs(int x, int y, int c) {
+		q.offer(new Dot(x,y,0));
+		chkmap[x][y] = false;
+		map[x][y] = c;
+		
+		while(!q.isEmpty()) {
+			Dot d = q.poll();
+			for(int i=0;i<4;i++) {
+				int dx = d.x + dir[i][0];
+				int dy = d.y + dir[i][1];
+				
+				if(inside(dx,dy) && chkmap[dx][dy] && map[dx][dy] ==1 ) {
+					map[dx][dy] = inum;
+					chkmap[dx][dy] = false;
+					q.offer(new Dot(dx,dy,0));
+				}
+			}
+		}
+		
+	}
+	
+	static boolean inside(int x, int y) {
+		return !(x<0||y<0||x>=n||y>=n);
+	}
+	
+
+}

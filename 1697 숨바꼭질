@@ -1,0 +1,57 @@
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class Main {
+	static int n,k;
+	static int time = 0;
+	static boolean[] chkmap = new boolean[100001];
+	
+	static Queue<Integer> q = new LinkedList<Integer>();
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		n=sc.nextInt();
+		k=sc.nextInt();
+		Arrays.fill(chkmap, true);
+		
+		if(n !=k) {
+		q.offer(n);
+		chkmap[n] = false;
+		move();
+		}
+		
+		System.out.println(time);
+		
+	}
+	
+	static void move() {
+		
+		while(!q.isEmpty()) {
+			time++;
+			int size = q.size();
+			for(int i=0;i<size;i++) {
+				int x = q.poll();
+				int[] dx = {x+1,x-1,x*2};
+				
+				for(int j=0;j<dx.length;j++) {
+					if(inside(dx[j]) && chkmap[dx[j]]) {
+						if(dx[j] == k) {
+							return;
+						}else {
+							q.offer(dx[j]);
+							chkmap[dx[j]] = false;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	static boolean inside(int x) {
+		return !(x<0||x>100000);
+	}
+
+}

@@ -1,0 +1,100 @@
+package dfs_example;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class BOJ_1525 {
+	static int[] dir = {1,-1,3,-3};
+	static int cnt = 0;
+	static boolean[] chkmap = new boolean[9];
+	static class Point{
+		String str;
+		boolean[] chkmap;
+		public Point(String str, boolean[] chkmap) {
+			this.str = str;
+			this.chkmap = chkmap;
+		}
+	}
+	static Queue<Point> q = new LinkedList<Point>();
+	static ArrayList<String> list = new ArrayList<>();
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		
+		String tmp = "";
+		for(int i=0;i<9;i++) {
+			tmp+= sc.next();
+			chkmap[i] = true;
+		}
+		q.add(new Point(tmp,chkmap));
+		list.add(tmp);
+		
+		bfs();
+		if(list.contains("123456780")) {
+			System.out.println(cnt);
+		}else {
+			System.out.println(-1);
+		}
+	}
+	/*1 5 2
+	4 0 3
+	7 8 6*/
+	static void bfs() {
+		while(!q.isEmpty()) {
+			int size = q.size();
+			cnt++;
+			for(int i=0;i<size;i++) {
+				Point p = q.poll();
+				String tmp = p.str;
+				boolean[] tChkmap = p.chkmap;
+				
+				for(int jnx=0;jnx<9;jnx++) {
+					System.out.print(tChkmap[jnx]);
+				}
+				System.out.println();
+				
+				if(tmp.equals("123456780")) {
+					return;
+				}
+				//0을 찾아서 시작
+				int start =tmp.indexOf("0");
+				
+				for(int k=0;k<4;k++) {
+					int dx = start +dir[k];
+					if(inside(dx,start) && tChkmap[dx]) {
+						tChkmap[dx] = false;
+						StringBuffer sb = new StringBuffer();
+						for(int inx=0;inx<9;inx++) {
+							//이동
+							if(inx == dx) {
+								sb.append(String.valueOf(tmp.charAt(start)));
+							}else if(inx == start) {
+								sb.append(String.valueOf(tmp.charAt(dx)));
+							}else {
+								sb.append(String.valueOf(tmp.charAt(inx)));
+							}
+						}
+						String tmp2 =sb.toString();
+						System.out.println(tmp2);
+						if(!list.contains(tmp2)) {
+							list.add(tmp2);
+							if(tmp2.equals("123456780")) {
+								return;
+							}
+							q.offer(new Point(tmp2, tChkmap));
+							//여기서 원복
+							tChkmap[dx] = true;
+						}
+					}
+				}
+			}
+		}
+	}
+	//x : 바뀐 좌표 s : start 좌표
+	static boolean inside(int x, int s) {
+		//x좌표(몫 일치) 또는 y좌표(나머지 일치) 가 아닌 경우 false
+		return !(x<0||x>=9|| !((x%3 == s%3) ||(x/3 == s/3)));
+	}
+}
